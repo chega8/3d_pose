@@ -347,7 +347,7 @@ if __name__ == '__main__':
     parser.add_argument('--tracking_method', type=str, default='bbox', choices=['bbox', 'pose'],
                         help='tracking method to calculate the tracklet of a subject from the input video')
 
-    parser.add_argument('--detector', type=str, default='yolo', choices=['yolo', 'maskrcnn'],
+    parser.add_argument('--detector', type=str, default='yolo', choices=['yolo', 'maskrcnn', 'retina'],
                         help='object detector to be used for bbox tracking')
 
     parser.add_argument('--yolo_img_size', type=int, default=416,
