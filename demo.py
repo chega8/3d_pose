@@ -380,11 +380,9 @@ if __name__ == '__main__':
     parser.add_argument('--save_obj', action='store_true',
                         help='save results as .obj files.')
 
-    parser.add_argument('--detector_checkpoint', action='store_true',
-                        help='save results as .obj files.')
+    parser.add_argument('--detector_checkpoint', type=str, default='')
 
-    parser.add_argument('--detector_config', action='store_true',
-                        help='save results as .obj files.')
+    parser.add_argument('--detector_config', type=str, default='')
 
     args = parser.parse_args()
 
