@@ -15,7 +15,6 @@ mmdet = imp.load_source('mmdet', '/content/gdrive/My Drive/vibe_repos/mmdetectio
 
 
 from torchvision.models.detection import keypointrcnn_resnet50_fpn
-from yolov3.yolo import YOLOv3
 
 from multi_person_tracker import Sort
 from multi_person_tracker.data import ImageFolder, images_to_video
@@ -77,9 +76,10 @@ class MPT():
         if self.detector_type == 'maskrcnn':
             self.detector = keypointrcnn_resnet50_fpn(pretrained=True).to(self.device).eval()
         elif self.detector_type == 'yolo':
-            self.detector = YOLOv3(
-                device=self.device, img_size=yolo_img_size, person_detector=True, video=True, return_dict=True
-            )
+            # self.detector = YOLOv3(
+            #     device=self.device, img_size=yolo_img_size, person_detector=True, video=True, return_dict=True
+            # )
+            pass
             # output [{'boxes': tensor([], size=(0, 4)), 
             #           'scores': tensor([]), 
             #           'classes': tensor([])}]
@@ -110,7 +110,7 @@ class MPT():
         print('Running Multi-Person-Tracker')
         trackers = []
         for batch in tqdm(dataloader):
-            batch = batch.to(self.device)
+            # batch = batch.to(self.device)
 
             # TODO: add handler for own detector input batch format
             if self.detector_type == 'retina':
@@ -247,20 +247,20 @@ class MPT():
 
 
 def prepare_image(model, img):
-    # class LoadImagee(object):
+    class LoadImage(object):
 
-    #     def __call__(self, results):
-    #         if isinstance(results['img'], str):
-    #             results['filename'] = ''#results['img']
-    #         else:
-    #             results['filename'] = ''
-    #         # img = mmcv.imread(results['img'])
-    #         # img = np.random.randint(0, 255, (720, 1280, 3))
-    #         results['img'] = np.float32(results['img'].cpu().numpy())
-    #         img = results['img']
-    #         results['img_shape'] = img.shape
-    #         results['ori_shape'] = img.shape
-    #         return results
+        def __call__(self, results):
+            if isinstance(results['img'], str):
+                results['filename'] = ''#results['img']
+            else:
+                results['filename'] = ''
+            # img = mmcv.imread(results['img'])
+            # img = np.random.randint(0, 255, (720, 1280, 3))
+            results['img'] = np.float32(results['img'].cpu().numpy())
+            img = results['img']
+            results['img_shape'] = img.shape
+            results['ori_shape'] = img.shape
+            return results
 
     class LoadImage(object):
 
@@ -279,7 +279,7 @@ def prepare_image(model, img):
     cfg = model.cfg
     device = next(model.parameters()).device  # model device
     # build the data pipeline
-    test_pipeline = [LoadImagee()] + cfg.data.test.pipeline[1:]
+    test_pipeline = [LoadImage()] + cfg.data.test.pipeline[1:]
     test_pipeline = Compose(test_pipeline)
     # prepare data
     data = dict(img=img)

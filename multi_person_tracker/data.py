@@ -55,4 +55,4 @@ class ImageFolder(Dataset):
 
     def __getitem__(self, idx):
         img = cv2.cvtColor(cv2.imread(self.image_file_names[idx]), cv2.COLOR_BGR2RGB)
-        return to_tensor(img)
+        return self.image_file_names[idx]
