@@ -7,19 +7,12 @@ import numpy as np
 import os.path as osp
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-print(__file__)
-import imp
-
-torchvision = imp.load_source('torchvision', '/usr/local/lib/python3.6/dist-packages/torchvision/__init__.py')
-mmdet = imp.load_source('mmdet', '/content/gdrive/My Drive/vibe_repos/mmdetection/mmdet/__init__.py')
-
 
 from torchvision.models.detection import keypointrcnn_resnet50_fpn
 
 from multi_person_tracker import Sort
 from multi_person_tracker.data import ImageFolder, images_to_video
 
-from google.colab.patches import cv2_imshow
 
 from mmdet.apis import init_detector, inference_detector
 import matplotlib.pyplot as plt
@@ -32,6 +25,7 @@ from mmcv.parallel import collate, scatter
 from mmdet.core import get_classes
 from mmdet.datasets.pipelines import Compose
 from mmdet.models import build_detector
+
 
 def filter_detections(detections, threshold = 0.5, area = 1500):
     filtered = np.where(detections[0][:,-1] >= threshold)[0]
@@ -208,8 +202,7 @@ class MPT():
                 cv2.putText(img, f'{d[4]}', (d[0] - 9, d[1] - 9), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
                 cv2.putText(img, f'{d[4]}', (d[0] - 8, d[1] - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 
-            # cv2.imshow('result video', img)
-            cv2_imshow(img)
+            cv2.imshow('result video', img)
 
             # time.sleep(0.03)
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -311,7 +304,7 @@ def match_output(mmdet_out):
             out['classes'].append(0)
     # for k in out.keys():
     #     out[k] = torch.Tensor(out[k])
-    print('out', out)
+    # print('out', out)
     return out
 
 # def batch_inferense(model, batch):
