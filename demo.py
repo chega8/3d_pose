@@ -13,6 +13,7 @@
 # for Intelligent Systems. All rights reserved.
 #
 # Contact: ps-license@tuebingen.mpg.de
+import imp
 
 import os
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
@@ -90,7 +91,7 @@ def main(args):
             detector_type=args.detector,
             output_format='dict',
             yolo_img_size=args.yolo_img_size,
-            detector_checkpoint=args.detector_checkpoint,
+            detector_checkpoint=args.detector_checkpoint.replace('(', '').replace(')', '').replace(',', ''),
             detector_config=args.detector_config
         )
         tracking_results = mot(image_folder)
@@ -380,9 +381,9 @@ if __name__ == '__main__':
     parser.add_argument('--save_obj', action='store_true',
                         help='save results as .obj files.')
 
-    parser.add_argument('--detector_checkpoint', type=str, default='')
+    parser.add_argument('--detector_checkpoint', type=str)
 
-    parser.add_argument('--detector_config', type=str, default='')
+    parser.add_argument('--detector_config', type=str)
 
     args = parser.parse_args()
 
