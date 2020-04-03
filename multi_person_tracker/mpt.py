@@ -33,6 +33,18 @@ from mmdet.core import get_classes
 from mmdet.datasets.pipelines import Compose
 from mmdet.models import build_detector
 
+def filter_detections(detections, threshold = 0.5, area = 1500):
+    filtered = np.where(detections[0][:,-1] >= threshold)[0]
+    detections = detections[0][filtered]
+    return detections[np.where((detections[:,2]-detections[:,0])*(detections[:,3]-detections[:,1]) >= area)[0]]  
+    
+def batch_inferense(detector, batch):
+    predictions = []
+    for image in batch:
+        boxes = filter_detections(inference_detector(detector, image))
+        predictions.append(boxes)
+    print('PREDICTIONS', predictions)
+    return predictions
 
 class MPT():
     def __init__(
@@ -108,23 +120,15 @@ class MPT():
 
         start = time.time()
         print('Running Multi-Person-Tracker')
+        
         trackers = []
         for batch in tqdm(dataloader):
-            # batch = batch.to(self.device)
-
-            # TODO: add handler for own detector input batch format
+            #batch = batch.to(self.device)
+            predicions = []
             if self.detector_type == 'retina':
                 predictions = batch_inferense(self.detector, batch)
-            else:
-                predictions = self.detector(batch)
-            
-            for pred in predictions:
-                print('type(pred)', type(pred))
-                bb = pred['boxes'].cpu().numpy()
-                sc = pred['scores'].cpu().numpy()[..., None]
-                dets = np.hstack([bb,sc])
-                dets = dets[sc[:,0] > self.detection_threshold]
 
+            for dets in predictions:
                 # if nothing detected do not update the tracker
                 if dets.shape[0] > 0:
                     track_bbs_ids = self.tracker.update(dets)
@@ -270,6 +274,7 @@ def prepare_image(model, img):
             else:
                 results['filename'] = None
             img = mmcv.imread(results['img'])
+            print('image')
             results['img'] = img
             results['img_shape'] = img.shape
             results['ori_shape'] = img.shape
@@ -309,11 +314,13 @@ def match_output(mmdet_out):
     print('out', out)
     return out
 
-def batch_inferense(model, batch):
-    result = []
-    for b in batch:
-        data = prepare_image(model, b)
-        result = predict(model, data)
-        result.append(match_output(result))
-    print(result)
-    return result
+# def batch_inferense(model, batch):
+#     result = []
+#     print('batch', batch)
+#     for b in batch:
+#         print('b', b)
+#         data = prepare_image(model, b)
+#         result = predict(model, data)
+#         result.append(match_output(result))
+#     print(result)
+#     return result
