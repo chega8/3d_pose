@@ -4,7 +4,7 @@ scipy==1.4.1
 numba==0.47.0
 smplx==0.1.13
 gdown==3.6.4
-joblib==0.14.1
+joblib==1.2.0
 pytube==9.5.3
 trimesh==3.5.25
 pyrender==0.1.36
